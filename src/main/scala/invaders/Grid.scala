@@ -1,3 +1,5 @@
+package invaders
+
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 object Grid {
