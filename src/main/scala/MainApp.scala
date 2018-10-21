@@ -1,17 +1,17 @@
-import scala.scalajs.js.JSApp
+import org.scalajs.dom.document
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, HTMLCanvasElement}
 
-import org.scalajs.dom
-import dom.{ document, window }
+import scala.scalajs.js.JSApp
 
 object MainApp extends JSApp {
 
   def main(): Unit = {
     println("Starting 'invaders'...")
 
-    val p = document.createElement("p")
-    val text = document.createTextNode("Hello!")
-    p.appendChild(text)
-    document.body.appendChild(p)
-  }
+    val canvas: HTMLCanvasElement = document.getElementById("invaders").asInstanceOf[HTMLCanvasElement]
+    val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+    canvas.focus()
 
+
+  }
 }
