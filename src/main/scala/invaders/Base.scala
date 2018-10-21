@@ -15,6 +15,12 @@ object Base {
   def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
+    drawBottomChunk(base, ctx)
+
+    ctx.restore()
+  }
+
+  private def drawBottomChunk(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     // bottom chunk
     val leftx = base.x - (widthInPixels / 2.0) * pixelFactor
     val rightx = base.x + (widthInPixels / 2.0) * pixelFactor
@@ -24,7 +30,5 @@ object Base {
 
     ctx.fillStyle = invaderGreen
     ctx.fillRect(leftx, topy, rightx - leftx, bottomy - topy)
-
-    ctx.restore()
   }
 }
