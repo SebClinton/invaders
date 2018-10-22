@@ -2,33 +2,35 @@ package invaders
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-case class Base(x: Double)
+case class BlockX(v: Int) extends AnyVal {
+  def pixelX: Int = v * BlockParty.pixelFactor
+}
+
+case class BlockY(v: Int) extends AnyVal {
+  def pixelY :Int = v * BlockParty.pixelFactor
+}
+
+case class Base(blockX: BlockX)
 
 object Base {
-  val heightInPixels = 7
-  val widthInPixels = 13
-
-  val invaderGreen = "#40f62e"
-
-  val pixelFactor = 5.0
-
   def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    drawBottomChunk(base, ctx)
+    Sprite.draw(base.blockX, BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v), sprite, ctx)
 
     ctx.restore()
   }
 
-  private def drawBottomChunk(base: Base, ctx: CanvasRenderingContext2D): Unit = {
-    // bottom chunk
-    val leftx = base.x - (widthInPixels / 2.0) * pixelFactor
-    val rightx = base.x + (widthInPixels / 2.0) * pixelFactor
+  val baseBlocks: String =
+    """
+      |      x
+      |     xxx
+      |     xxx
+      | xxxxxxxxxxx
+      |xxxxxxxxxxxxx
+      |xxxxxxxxxxxxx
+      |xxxxxxxxxxxxx
+    """.stripMargin
 
-    val topy = ctx.canvas.height - (3 * pixelFactor)
-    val bottomy = ctx.canvas.height
-
-    ctx.fillStyle = invaderGreen
-    ctx.fillRect(leftx, topy, rightx - leftx, bottomy - topy)
-  }
+  val sprite: Sprite = Sprite.fromString(baseBlocks)
 }
