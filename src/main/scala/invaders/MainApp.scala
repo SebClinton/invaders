@@ -19,11 +19,19 @@ object MainApp extends JSApp {
 
     document.body.appendChild(canvas)
 
-    var gameState = GameState(Base(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)), drawGuides = true)
-
     val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-    window.onkeydown = keyDown
-    window.onkeyup = keyUp
+
+    // here is the mutable state for the game
+    var gameState = GameState(Base(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)), drawGuides = true)
+    var previous: Double = 0
+
+    def frame(timestamp: Double): Unit = {
+      val elapsed = timestamp - previous
+      gameState = update(gameState, elapsed / 1000)
+      draw(gameState, ctx)
+      previous = timestamp
+      window.requestAnimationFrame(frame)
+    }
 
     def keyDown(e: KeyboardEvent): Unit =
       gameState = keyHandler(gameState, e, value = true)
@@ -32,7 +40,14 @@ object MainApp extends JSApp {
       gameState = keyHandler(gameState, e, value = false)
 
     canvas.focus()
-    draw(ctx, gameState)
+    window.requestAnimationFrame(frame)
+    window.onkeydown = keyDown
+    window.onkeyup = keyUp
+  }
+
+  def update(gameState: GameState, elapsed: Double): GameState = {
+    // TODO implement this!
+    gameState
   }
 
   def keyHandler(gs: GameState, e: KeyboardEvent, value: Boolean): GameState = {
@@ -49,7 +64,8 @@ object MainApp extends JSApp {
     }
   }
 
-  def draw(ctx: CanvasRenderingContext2D, gameState: GameState): Unit = {
+  def draw(gameState: GameState, ctx: CanvasRenderingContext2D): Unit = {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     if (gameState.drawGuides) Grid.draw(ctx)
     Base.draw(gameState.base, ctx)
   }
