@@ -4,7 +4,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 object Grid {
   def draw(ctx: CanvasRenderingContext2D): Unit = {
-    val minor = 10
+    val minor = BlockParty.pixelFactor
     val major = minor * 5
     val stroke = "#00FF00"
     val fill = "#009900"
