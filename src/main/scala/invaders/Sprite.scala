@@ -14,11 +14,12 @@ object Sprite {
     * cases blank lines to be present at the start and end of the string, so the code
     * will drop those.
     */
-  def fromString(s: String): Sprite = {
+  def fromString(s: String, colorMappings: (Char, String)*): Sprite = {
+    val colorMap: Map[Char, String] = Map(colorMappings: _*)
+
     val blocks = s.split("\n").drop(1).dropRight(1).toList.zipWithIndex.map { case (row, lineNumber) =>
       row.zipWithIndex.map {
-        case (' ', col) => Block(None, col, lineNumber)
-        case (_, col) => Block(Some(BlockParty.invaderGreen), col, lineNumber)
+        case (c, col) => Block(colorMap.get(c), col, lineNumber)
       }.toList
     }
 

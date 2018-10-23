@@ -7,7 +7,7 @@ case class BlockX(v: Int) extends AnyVal {
 }
 
 case class BlockY(v: Int) extends AnyVal {
-  def pixelY :Int = v * BlockParty.pixelFactor
+  def pixelY: Int = v * BlockParty.pixelFactor
 }
 
 case class Base(blockX: BlockX)
@@ -21,7 +21,7 @@ object Base {
     ctx.restore()
   }
 
-  val baseBlocks: String =
+  val blockString: String =
     """
       |      x
       |     xxx
@@ -32,5 +32,5 @@ object Base {
       |xxxxxxxxxxxxx
     """.stripMargin
 
-  val sprite: Sprite = Sprite.fromString(baseBlocks)
+  val sprite: Sprite = Sprite.fromString(blockString, 'x' -> BlockParty.invaderGreen)
 }
