@@ -12,6 +12,7 @@ case class BlockY(v: Int) extends AnyVal {
 
 case class Base(blockX: BlockX)
 
+
 object Base {
   def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
@@ -33,4 +34,5 @@ object Base {
     """.stripMargin
 
   val sprite: Sprite = Sprite.fromString(blockString, 'x' -> BlockParty.invaderGreen)
+
 }

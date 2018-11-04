@@ -5,7 +5,7 @@ import org.scalajs.dom.{document, window}
 
 import scala.scalajs.js.JSApp
 
-case class GameState(base: Base, drawGuides: Boolean)
+case class GameState(base: Base, drawGuides: Boolean, alienGrid: AlienGrid)
 
 object MainApp extends JSApp {
 
@@ -22,7 +22,11 @@ object MainApp extends JSApp {
     val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
     // here is the mutable state for the game
-    var gameState = GameState(Base(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)), drawGuides = true)
+    var gameState = GameState(
+      Base(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
+      drawGuides = false,
+      AlienGrid.create
+    )
     var previous: Double = 0
 
     def frame(timestamp: Double): Unit = {
@@ -68,6 +72,7 @@ object MainApp extends JSApp {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     if (gameState.drawGuides) Grid.draw(ctx)
     Base.draw(gameState.base, ctx)
+    AlienGrid.draw(gameState.alienGrid, ctx)
   }
 
 }
