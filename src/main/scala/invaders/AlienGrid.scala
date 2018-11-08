@@ -13,7 +13,7 @@ case class AlienGrid(
 object AlienGrid {
   def create: AlienGrid = {
     val aliens: List[List[Option[Alien]]] = (1 to 11).map { _ =>
-      List(Alien.makeType3, Alien.makeType2, Alien.makeType2, Alien.makeType1, Alien.makeType1).map(a => Some(a))
+      List(Alien.type3, Alien.type2, Alien.type2, Alien.type1, Alien.type1).map(a => Some(a))
     }.toList
 
     AlienGrid(BlockX(0), BlockY(0), BlockX(2), BlockY(4), aliens)
