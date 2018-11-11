@@ -37,16 +37,11 @@ object MainApp extends JSApp {
       moveRight = false
     )
 
-    var tickedAt: Double = 0
     val tickRate: Double = 17
 
-    def frame(timestamp: Double): Unit = {
-      if (timestamp - tickedAt >= tickRate) {
-        tickedAt = timestamp
-        gameState = update(gameState)
-        draw(gameState, ctx)
-      }
-      window.requestAnimationFrame(frame)
+    val frame:() => Any = { () =>
+      gameState = update(gameState)
+      draw(gameState, ctx)
     }
 
     def keyDown(e: KeyboardEvent): Unit =
@@ -56,7 +51,7 @@ object MainApp extends JSApp {
       gameState = keyHandler(gameState, e, value = false)
 
     canvas.focus()
-    window.requestAnimationFrame(frame)
+    window.setInterval(frame, tickRate)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
   }
