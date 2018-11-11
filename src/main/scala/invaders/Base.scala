@@ -10,14 +10,19 @@ case class BlockY(v: Int) extends AnyVal {
   def pixelY: Int = v * BlockParty.pixelFactor
 }
 
-case class Base(blockX: BlockX)
-
+case class Base(blockX: BlockX, sprite: Sprite) {
+  val blockHeight: BlockY = sprite.blockHeight
+  val blockWidth: BlockX = sprite.blockWidth
+}
 
 object Base {
+
+  def make(x: BlockX): Base = Base(x, sprite)
+
   def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    Sprite.draw(base.blockX, BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v), sprite, ctx)
+    Sprite.draw(base.blockX, BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 40), base.sprite, ctx)
 
     ctx.restore()
   }
@@ -28,6 +33,7 @@ object Base {
       |     xxx
       |     xxx
       | xxxxxxxxxxx
+      |xxxxxxxxxxxxx
       |xxxxxxxxxxxxx
       |xxxxxxxxxxxxx
       |xxxxxxxxxxxxx

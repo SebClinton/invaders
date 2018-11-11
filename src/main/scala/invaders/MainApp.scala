@@ -5,7 +5,13 @@ import org.scalajs.dom.{document, window}
 
 import scala.scalajs.js.JSApp
 
-case class GameState(base: Base, drawGuides: Boolean, alienGrid: AlienGrid)
+case class GameState(
+                      base: Base,
+                      drawGuides: Boolean,
+                      alienGrid: AlienGrid,
+                      moveLeft: Boolean,
+                      moveRight: Boolean
+                    )
 
 object MainApp extends JSApp {
 
@@ -16,6 +22,7 @@ object MainApp extends JSApp {
     canvas.setAttribute("id", "invaders")
     canvas.setAttribute("width", BlockParty.canvasWidth.toString)
     canvas.setAttribute("height", BlockParty.canvasHeight.toString)
+    canvas.setAttribute("imageSmoothingEnabled", "false")
 
     document.body.appendChild(canvas)
 
@@ -23,17 +30,22 @@ object MainApp extends JSApp {
 
     // here is the mutable state for the game
     var gameState = GameState(
-      Base(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
+      Base.make(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
       drawGuides = false,
-      AlienGrid.create
+      AlienGrid.create,
+      moveLeft = false,
+      moveRight = false
     )
-    var previous: Double = 0
+
+    var tickedAt: Double = 0
+    val tickRate: Double = 17
 
     def frame(timestamp: Double): Unit = {
-      val elapsed = timestamp - previous
-      gameState = update(gameState, elapsed / 1000)
-      draw(gameState, ctx)
-      previous = timestamp
+      if (timestamp - tickedAt >= tickRate) {
+        tickedAt = timestamp
+        gameState = update(gameState)
+        draw(gameState, ctx)
+      }
       window.requestAnimationFrame(frame)
     }
 
@@ -49,20 +61,31 @@ object MainApp extends JSApp {
     window.onkeyup = keyUp
   }
 
-  def update(gameState: GameState, elapsed: Double): GameState = {
-    // TODO implement this!
-    gameState
+  def update(gameState: GameState): GameState = {
+    val oldBase = gameState.base
+
+    if (gameState.moveLeft) {
+      val newX = 2.max(oldBase.blockX.v - 2)
+      val newBase = oldBase.copy(blockX = BlockX(newX))
+      gameState.copy(base = newBase)
+    }
+    else if (gameState.moveRight) {
+      val newX = (oldBase.blockX.v + 2).min(BlockParty.screenWidth.v - oldBase.blockWidth.v - 2)
+      val newBase = oldBase.copy(blockX = BlockX(newX))
+      gameState.copy(base = newBase)
+    } else
+      gameState
   }
 
   def keyHandler(gs: GameState, e: KeyboardEvent, value: Boolean): GameState = {
     e.key match {
       case "ArrowLeft" | "a" =>
         e.preventDefault()
-        gs // TODO: update the game state to move the base left
+        gs.copy(moveLeft = value)
 
       case "ArrowRight" | "d" =>
         e.preventDefault()
-        gs // TODO: update the game state to move the base right
+        gs.copy(moveRight = value)
 
       case _ => gs
     }
