@@ -11,7 +11,8 @@ case class GameState(
                       alienGrid: AlienGrid,
                       moveLeft: Boolean,
                       moveRight: Boolean,
-                      gridDirectionLeft: Boolean
+                      gridDirectionLeft: Boolean,
+                      gridTickDelay: Double
                     )
 
 object MainApp extends JSApp {
@@ -36,18 +37,19 @@ object MainApp extends JSApp {
       AlienGrid.create,
       moveLeft = false,
       moveRight = false,
-      gridDirectionLeft = false
+      gridDirectionLeft = false,
+      gridTickDelay = 850.0
     )
 
     val tickRate: Double = 20
-    val gridTickRate: Double = 850
 
     val baseLoop: () => Any = { () =>
       gameState = updateBase(gameState)
     }
 
-    val gridLoop: () => Any = { () =>
+    lazy val gridLoop: () => Any = { () =>
       gameState = updateGrid(gameState)
+      window.setTimeout(gridLoop, gameState.gridTickDelay)
     }
 
     def frame(elapsed: Double): Unit = {
@@ -64,7 +66,7 @@ object MainApp extends JSApp {
     canvas.focus()
     window.requestAnimationFrame(frame)
     window.setInterval(baseLoop, tickRate)
-    window.setInterval(gridLoop, gridTickRate)
+    window.setTimeout(gridLoop, gameState.gridTickDelay)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
   }
