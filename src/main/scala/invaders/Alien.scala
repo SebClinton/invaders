@@ -4,13 +4,15 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.util.Random
 
-case class Alien(sprite1: Sprite, sprite2: Sprite, score: Int)
+case class Alien(sprite1: Sprite, sprite2: Sprite, score: Int) {
+  val width: BlockX = BlockX(sprite1.blockWidth.v.max(sprite2.blockWidth.v))
+}
 
 object Alien {
-  def draw(x: BlockX, y: BlockY, alien: Alien, ctx: CanvasRenderingContext2D): Unit = {
+  def draw(x: BlockX, y: BlockY, alien: Alien, drawSprite1: Boolean, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    Sprite.draw(x, y, if (Random.nextBoolean()) alien.sprite1 else alien.sprite2, ctx)
+    Sprite.draw(x, y, if (drawSprite1) alien.sprite1 else alien.sprite2, ctx)
 
     ctx.restore()
   }

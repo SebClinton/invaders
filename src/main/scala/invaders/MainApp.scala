@@ -10,7 +10,8 @@ case class GameState(
                       drawGuides: Boolean,
                       alienGrid: AlienGrid,
                       moveLeft: Boolean,
-                      moveRight: Boolean
+                      moveRight: Boolean,
+                      gridDirectionLeft: Boolean
                     )
 
 object MainApp extends JSApp {
@@ -34,14 +35,24 @@ object MainApp extends JSApp {
       drawGuides = false,
       AlienGrid.create,
       moveLeft = false,
-      moveRight = false
+      moveRight = false,
+      gridDirectionLeft = false
     )
 
-    val tickRate: Double = 17
+    val tickRate: Double = 20
+    val gridTickRate: Double = 850
 
-    val frame:() => Any = { () =>
-      gameState = update(gameState)
+    val baseLoop: () => Any = { () =>
+      gameState = updateBase(gameState)
+    }
+
+    val gridLoop: () => Any = { () =>
+      gameState = updateGrid(gameState)
+    }
+
+    def frame(elapsed: Double): Unit = {
       draw(gameState, ctx)
+      window.requestAnimationFrame(frame)
     }
 
     def keyDown(e: KeyboardEvent): Unit =
@@ -51,12 +62,33 @@ object MainApp extends JSApp {
       gameState = keyHandler(gameState, e, value = false)
 
     canvas.focus()
-    window.setInterval(frame, tickRate)
+    window.requestAnimationFrame(frame)
+    window.setInterval(baseLoop, tickRate)
+    window.setInterval(gridLoop, gridTickRate)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
   }
 
-  def update(gameState: GameState): GameState = {
+  def updateGrid(gameState: GameState): GameState = {
+    val oldGrid = gameState.alienGrid
+    val drawSprite1 = !oldGrid.drawSprite1
+
+    if (gameState.gridDirectionLeft) {
+      if (oldGrid.x.v <= 0) {
+        gameState.copy(gridDirectionLeft = false, alienGrid = oldGrid.copy(y = oldGrid.y + 4, drawSprite1 = drawSprite1))
+      } else {
+        gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x - 2, drawSprite1 = drawSprite1))
+      }
+    } else {
+      if (oldGrid.x + oldGrid.width >= BlockParty.screenWidth) {
+        gameState.copy(gridDirectionLeft = true, alienGrid = oldGrid.copy(y = oldGrid.y + 4, drawSprite1 = drawSprite1))
+      } else {
+        gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + 2, drawSprite1 = drawSprite1))
+      }
+    }
+  }
+
+  def updateBase(gameState: GameState): GameState = {
     val oldBase = gameState.base
 
     if (gameState.moveLeft) {
