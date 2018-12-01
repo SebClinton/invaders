@@ -12,7 +12,8 @@ case class GameState(
                       moveLeft: Boolean,
                       moveRight: Boolean,
                       gridDirectionLeft: Boolean,
-                      gridTickDelay: Double
+                      gridTickDelay: Double,
+                      bullet: Option[Bullet]
                     )
 
 object MainApp extends JSApp {
@@ -38,10 +39,16 @@ object MainApp extends JSApp {
       moveLeft = false,
       moveRight = false,
       gridDirectionLeft = false,
-      gridTickDelay = 850.0
+      gridTickDelay = 850.0,
+      bullet = None
     )
 
     val tickRate: Double = 20
+    val bulletRate:Double = 5
+
+    val bulletLoop: () => Any = { () =>
+      gameState = updateBullet(gameState)
+    }
 
     val baseLoop: () => Any = { () =>
       gameState = updateBase(gameState)
@@ -66,6 +73,7 @@ object MainApp extends JSApp {
     canvas.focus()
     window.requestAnimationFrame(frame)
     window.setInterval(baseLoop, tickRate)
+    window.setInterval(bulletLoop, bulletRate)
     window.setTimeout(gridLoop, gameState.gridTickDelay)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
@@ -88,6 +96,20 @@ object MainApp extends JSApp {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + 2, drawSprite1 = drawSprite1))
       }
     }
+  }
+
+  def updateBullet(gameState: GameState): GameState = {
+    gameState.bullet.map { b =>
+      val newBullet =
+        if (b.y.v <= 0) None
+        else {
+          val newY = b.y - 1
+          Some(b.copy(y = newY))
+        }
+
+
+      gameState.copy(bullet = newBullet)
+    }.getOrElse(gameState)
   }
 
   def updateBase(gameState: GameState): GameState = {
@@ -116,6 +138,9 @@ object MainApp extends JSApp {
         e.preventDefault()
         gs.copy(moveRight = value)
 
+      case " " | "ArrowDown" if gs.bullet.isEmpty =>
+        gs.copy(bullet = Some(Bullet.make(gs.base.centreX, gs.base.blockY - 2)))
+
       case _ => gs
     }
   }
@@ -125,6 +150,7 @@ object MainApp extends JSApp {
     if (gameState.drawGuides) Grid.draw(ctx)
     Base.draw(gameState.base, ctx)
     AlienGrid.draw(gameState.alienGrid, ctx)
+    gameState.bullet.foreach(Bullet.draw(_, ctx))
   }
 
 }

@@ -18,13 +18,16 @@ case class BlockY(v: Int) {
   def pixelY: Int = v * BlockParty.pixelFactor
 
   def +(i: Int): BlockY = BlockY(v + i)
+  def -(i: Int): BlockY = BlockY(v - i)
 
   def +(i: BlockY): BlockY = BlockY(v + i.v)
 }
 
 case class Base(blockX: BlockX, sprite: Sprite) {
+  val blockY = BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 40)
   val blockHeight: BlockY = sprite.blockHeight
   val blockWidth: BlockX = sprite.blockWidth
+  val centreX:BlockX = blockX + sprite.blockWidth.v / 2
 }
 
 object Base {
@@ -34,7 +37,8 @@ object Base {
   def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    Sprite.draw(base.blockX, BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 40), base.sprite, ctx)
+
+    Sprite.draw(base.blockX, base.blockY, base.sprite, ctx)
 
     ctx.restore()
   }
