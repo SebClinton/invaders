@@ -5,23 +5,47 @@ import org.scalajs.dom.{document, window}
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
-case class GameState(
-  base: Base,
-  drawGuides: Boolean,
-  alienGrid: AlienGrid,
-  moveLeft: Boolean,
-  moveRight: Boolean,
-  gridDirectionLeft: Boolean,
-  gridTickDelay: Double,
-  bullet: Option[Bullet]
-)
-
 object Invaders {
 
   @JSExportTopLevel("invaders.Invaders")
   protected def getInstance(): this.type = this
 
   import UpdateFunctions._
+
+  // here is the mutable state for the game
+  private var gameState = GameState(
+    Base.make(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
+    drawGuides = false,
+    AlienGrid.create,
+    moveLeft = false,
+    moveRight = false,
+    gridDirectionLeft = false,
+    gridTickDelay = 850.0,
+    bullet = None
+  )
+
+  private val bulletLoop: () => Any =
+    () => gameState = updateBullet(gameState)
+
+  private val baseLoop: () => Any =
+    () => gameState = updateBase(gameState)
+
+  private lazy val gridLoop: () => Any = { () =>
+    gameState = updateGrid(gameState)
+    window.setTimeout(gridLoop, gameState.gridTickDelay)
+  }
+
+  private def keyDown(e: KeyboardEvent): Unit =
+    gameState = keyHandler(gameState, e, value = true)
+
+  private def keyUp(e: KeyboardEvent): Unit =
+    gameState = keyHandler(gameState, e, value = false)
+
+  // How many milliseconds to wait between calls to the base loop
+  private val baseTickDelay: Double = 20
+
+  // How many milliseconds to wait between calls to the bullet loop
+  private val bulletTickDelay: Double = 5
 
   @JSExport
   def main(args: Array[String]): Unit = {
@@ -37,45 +61,10 @@ object Invaders {
 
     val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
-    // here is the mutable state for the game
-    var gameState = GameState(
-      Base.make(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
-      drawGuides = false,
-      AlienGrid.create,
-      moveLeft = false,
-      moveRight = false,
-      gridDirectionLeft = false,
-      gridTickDelay = 850.0,
-      bullet = None
-    )
-
-
-    val bulletLoop: () => Any = { () =>
-      gameState = updateBullet(gameState)
-    }
-
-    val baseLoop: () => Any = { () =>
-      gameState = updateBase(gameState)
-    }
-
-    lazy val gridLoop: () => Any = { () =>
-      gameState = updateGrid(gameState)
-      window.setTimeout(gridLoop, gameState.gridTickDelay)
-    }
-
     def frame(elapsed: Double): Unit = {
       draw(gameState, ctx)
       window.requestAnimationFrame(frame)
     }
-
-    def keyDown(e: KeyboardEvent): Unit =
-      gameState = keyHandler(gameState, e, value = true)
-
-    def keyUp(e: KeyboardEvent): Unit =
-      gameState = keyHandler(gameState, e, value = false)
-
-    val baseTickDelay: Double = 20
-    val bulletTickDelay: Double = 5
 
     canvas.focus()
     window.requestAnimationFrame(frame)
