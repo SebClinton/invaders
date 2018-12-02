@@ -3,22 +3,28 @@ package invaders
 import org.scalajs.dom.raw.{CanvasRenderingContext2D, HTMLCanvasElement, KeyboardEvent}
 import org.scalajs.dom.{document, window}
 
-import scala.scalajs.js.JSApp
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 case class GameState(
-                      base: Base,
-                      drawGuides: Boolean,
-                      alienGrid: AlienGrid,
-                      moveLeft: Boolean,
-                      moveRight: Boolean,
-                      gridDirectionLeft: Boolean,
-                      gridTickDelay: Double,
-                      bullet: Option[Bullet]
-                    )
+  base: Base,
+  drawGuides: Boolean,
+  alienGrid: AlienGrid,
+  moveLeft: Boolean,
+  moveRight: Boolean,
+  gridDirectionLeft: Boolean,
+  gridTickDelay: Double,
+  bullet: Option[Bullet]
+)
 
-object MainApp extends JSApp {
+object Invaders {
 
-  def main(): Unit = {
+  @JSExportTopLevel("invaders.Invaders")
+  protected def getInstance(): this.type = this
+
+  import UpdateFunctions._
+
+  @JSExport
+  def main(args: Array[String]): Unit = {
     println("Starting 'invaders'...")
 
     val canvas: HTMLCanvasElement = document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
@@ -43,8 +49,6 @@ object MainApp extends JSApp {
       bullet = None
     )
 
-    val tickRate: Double = 20
-    val bulletRate:Double = 5
 
     val bulletLoop: () => Any = { () =>
       gameState = updateBullet(gameState)
@@ -70,62 +74,16 @@ object MainApp extends JSApp {
     def keyUp(e: KeyboardEvent): Unit =
       gameState = keyHandler(gameState, e, value = false)
 
+    val baseTickDelay: Double = 20
+    val bulletTickDelay: Double = 5
+
     canvas.focus()
     window.requestAnimationFrame(frame)
-    window.setInterval(baseLoop, tickRate)
-    window.setInterval(bulletLoop, bulletRate)
+    window.setInterval(baseLoop, baseTickDelay)
+    window.setInterval(bulletLoop, bulletTickDelay)
     window.setTimeout(gridLoop, gameState.gridTickDelay)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
-  }
-
-  def updateGrid(gameState: GameState): GameState = {
-    val oldGrid = gameState.alienGrid
-    val drawSprite1 = !oldGrid.drawSprite1
-
-    if (gameState.gridDirectionLeft) {
-      if (oldGrid.x.v <= 0) {
-        gameState.copy(gridDirectionLeft = false, alienGrid = oldGrid.copy(y = oldGrid.y + 4, drawSprite1 = drawSprite1))
-      } else {
-        gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x - 2, drawSprite1 = drawSprite1))
-      }
-    } else {
-      if (oldGrid.x + oldGrid.width >= BlockParty.screenWidth) {
-        gameState.copy(gridDirectionLeft = true, alienGrid = oldGrid.copy(y = oldGrid.y + 4, drawSprite1 = drawSprite1))
-      } else {
-        gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + 2, drawSprite1 = drawSprite1))
-      }
-    }
-  }
-
-  def updateBullet(gameState: GameState): GameState = {
-    gameState.bullet.map { b =>
-      val newBullet =
-        if (b.y.v <= 0) None
-        else {
-          val newY = b.y - 1
-          Some(b.copy(y = newY))
-        }
-
-
-      gameState.copy(bullet = newBullet)
-    }.getOrElse(gameState)
-  }
-
-  def updateBase(gameState: GameState): GameState = {
-    val oldBase = gameState.base
-
-    if (gameState.moveLeft) {
-      val newX = 2.max(oldBase.blockX.v - 2)
-      val newBase = oldBase.copy(blockX = BlockX(newX))
-      gameState.copy(base = newBase)
-    }
-    else if (gameState.moveRight) {
-      val newX = (oldBase.blockX.v + 2).min(BlockParty.screenWidth.v - oldBase.blockWidth.v - 2)
-      val newBase = oldBase.copy(blockX = BlockX(newX))
-      gameState.copy(base = newBase)
-    } else
-      gameState
   }
 
   def keyHandler(gs: GameState, e: KeyboardEvent, value: Boolean): GameState = {
@@ -152,5 +110,4 @@ object MainApp extends JSApp {
     AlienGrid.draw(gameState.alienGrid, ctx)
     gameState.bullet.foreach(Bullet.draw(_, ctx))
   }
-
 }
