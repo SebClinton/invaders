@@ -8,5 +8,6 @@ case class GameState(
   moveRight: Boolean,
   gridDirectionLeft: Boolean,
   gridTickDelay: Double,
-  bullet: Option[Bullet]
+  bullet: Option[Bullet],
+  bombs: List[Bomb]
 )

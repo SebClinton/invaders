@@ -13,6 +13,27 @@ case class AlienGrid(
                       columns: List[List[Option[Alien]]]
                     ) {
   val width: BlockX = BlockX(columnWidth.v * columns.length + columnPadding.v * (columns.length - 1))
+
+  val columnCount = columns.length
+  val rowCount = columns.foldLeft(0) { (h, col) =>
+    h.max(col.length)
+  }
+
+  def alienAt(colX: Int, rowY: Int): Option[Alien] = {
+    for {
+      col <- columns.drop(colX - 1).headOption
+      row <- col.drop(rowY - 1).headOption.flatten
+    } yield row
+  }
+
+  def bombOriginFor(col: Int, row: Int): Option[(BlockX, BlockY)] = {
+    alienAt(col, row).map { alien =>
+      val alienX: BlockX = x + BlockX(col * (columnWidth.v + columnPadding.v))
+      val alienY: BlockY = y + BlockY(row * (rowHeight.v + rowPadding.v))
+
+      (alienX + alien.width.v / 2, alienY + alien.height)
+    }
+  }
 }
 
 object AlienGrid {

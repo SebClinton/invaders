@@ -6,6 +6,7 @@ import scala.util.Random
 
 case class Alien(sprite1: Sprite, sprite2: Sprite, score: Int) {
   val width: BlockX = BlockX(sprite1.blockWidth.v.max(sprite2.blockWidth.v))
+  val height: BlockY = BlockY(sprite1.blockHeight.v.max(sprite2.blockHeight.v))
 }
 
 object Alien {

@@ -26,6 +26,6 @@ object Bullet {
       |x
     """.stripMargin
 
-  val sprite: Sprite = Sprite.fromString(blockString, 'x' -> "red")
+  val sprite: Sprite = Sprite.fromString(blockString, 'x' -> "blue")
 
 }

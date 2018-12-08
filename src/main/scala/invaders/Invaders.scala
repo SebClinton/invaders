@@ -21,11 +21,15 @@ object Invaders {
     moveRight = false,
     gridDirectionLeft = false,
     gridTickDelay = 850.0,
-    bullet = None
+    bullet = None,
+    bombs = List()
   )
 
   private val bulletLoop: () => Any =
     () => gameState = updateBullet(gameState)
+
+ private val bombLoop: () => Any =
+    () => gameState = updateBombs(gameState)
 
   private val baseLoop: () => Any =
     () => gameState = updateBase(gameState)
@@ -46,6 +50,8 @@ object Invaders {
 
   // How many milliseconds to wait between calls to the bullet loop
   private val bulletTickDelay: Double = 5
+
+  private val bombTickDelay: Double = 5
 
   @JSExport
   def main(args: Array[String]): Unit = {
@@ -70,6 +76,7 @@ object Invaders {
     window.requestAnimationFrame(frame)
     window.setInterval(baseLoop, baseTickDelay)
     window.setInterval(bulletLoop, bulletTickDelay)
+    window.setInterval(bombLoop, bombTickDelay)
     window.setTimeout(gridLoop, gameState.gridTickDelay)
     window.onkeydown = keyDown
     window.onkeyup = keyUp
@@ -98,5 +105,6 @@ object Invaders {
     Base.draw(gameState.base, ctx)
     AlienGrid.draw(gameState.alienGrid, ctx)
     gameState.bullet.foreach(Bullet.draw(_, ctx))
+    gameState.bombs.foreach(Bomb.draw(_, ctx))
   }
 }

@@ -1,5 +1,7 @@
 package invaders
 
+import scala.util.Random
+
 object UpdateFunctions {
   def updateGrid(gameState: GameState): GameState = {
     // When the grid reaches the edge of the screen it will move down this number of blocks
@@ -23,6 +25,27 @@ object UpdateFunctions {
       } else {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + stepAcrossBlockCount, drawSprite1 = drawSprite1))
       }
+    }
+  }
+
+  def updateBombs(gameState: GameState): GameState = {
+    val newBombs: List[Bomb] = gameState.bombs.flatMap { b =>
+      if (b.y.v > BlockParty.screenHeight.v) None
+      else Some(b.copy(y = b.y + 1))
+    }
+
+    val createdBomb: Option[Bomb] = if (Random.nextFloat() <= 0.005) createBomb(gameState)
+    else None
+
+    gameState.copy(bombs = newBombs ++ createdBomb)
+  }
+
+  private def createBomb(gameState: GameState): Option[Bomb] = {
+    val alienCol = Random.nextInt(gameState.alienGrid.columnCount)
+    val alienRow = Random.nextInt(gameState.alienGrid.rowCount)
+
+    gameState.alienGrid.bombOriginFor(alienCol, alienRow).map { case (x, y) =>
+      Bomb.make(x, y)
     }
   }
 
