@@ -93,6 +93,7 @@ object Invaders {
         gs.copy(moveRight = value)
 
       case " " | "ArrowDown" if gs.bullet.isEmpty =>
+        Sounds.shoot.play()
         gs.copy(bullet = Some(Bullet.make(gs.base.centreX, gs.base.blockY - 2)))
 
       case _ => gs
