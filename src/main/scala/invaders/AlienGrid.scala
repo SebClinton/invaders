@@ -7,37 +7,50 @@ case class Row(v: Int)
 case class Col(v: Int)
 
 case class AlienGrid(
-                      x: BlockX,
-                      y: BlockY,
-                      columnPadding: BlockX,
-                      rowPadding: BlockY,
-                      columnWidth: BlockX,
-                      rowHeight: BlockY,
-                      drawSprite1: Boolean,
-                      columns: List[List[Option[Alien]]]
-                    ) {
+  x: BlockX,
+  y: BlockY,
+  columnPadding: BlockX,
+  rowPadding: BlockY,
+  columnWidth: BlockX,
+  rowHeight: BlockY,
+  drawSprite1: Boolean,
+  columns: List[List[Option[Alien]]]
+) {
 
   val topLeft: Point = Point(x, y)
 
   lazy val box: Box =
     Box(Point(x, y), Point(x + width - 1, y + height - 1))
 
-  lazy val width: BlockX = BlockX(columnWidth.v * columnCount + columnPadding.v * (columnCount - 1))
+  lazy val width : BlockX = BlockX(columnWidth.v * columnCount + columnPadding.v * (columnCount - 1))
   lazy val height: BlockY = BlockY(rowHeight.v * rowCount + rowPadding.v * (rowCount - 1))
 
-  lazy val columnCount = columns.length
-  lazy val rowCount = columns.map(_.length).max
+  lazy val columnCount: Int = columns.length
+  lazy val rowCount   : Int = columns.map(_.length).max
 
-  def topLeftOf(row: Row, col: Col): Point =
-    Point(x + col.v * (columnWidth + columnPadding).v, y + row.v * (rowHeight + rowPadding).v)
+  def topLeftOf(row: Row, col: Col): Point = {
+    topLeft + Point(BlockX(col.v * (columnWidth + columnPadding).v), BlockY(row.v * (rowHeight + rowPadding).v))
+  }
 
   lazy val positionedAliens: List[(PositionedAlien, Row, Col)] = {
     columns.zipWithIndex.flatMap { case (cols, colNum) =>
       cols.zipWithIndex.flatMap { case (maybeA, rowNum) =>
-        maybeA.map(a => (PositionedAlien(topLeftOf(Row(rowNum), Col(colNum)) + topLeft, a), Row(rowNum), Col(colNum)))
+        maybeA.map(a => (PositionedAlien(topLeftOf(Row(rowNum), Col(colNum)), a), Row(rowNum), Col(colNum)))
       }
     }
   }
+
+  def removeAlienAt(row: Row, col: Col): AlienGrid = {
+    val newAliens = columns.zipWithIndex.map { case (column, c) =>
+      column.zipWithIndex.map { case (a, r) =>
+        if (row.v == r && col.v == c) None else a
+      }
+    }
+
+    copy(columns = newAliens)
+  }
+
+  def spriteFor(alien: Alien): Sprite = if (drawSprite1) alien.sprite1 else alien.sprite2
 
   def alienAt(row: Row, col: Col): Option[Alien] = {
     for {
@@ -62,18 +75,21 @@ object AlienGrid {
       List(Alien.type3, Alien.type2, Alien.type2, Alien.type1, Alien.type1).map(a => Some(a))
     }.toList
 
-    AlienGrid(BlockX(0), BlockY(0), BlockX(2), BlockY(4), BlockX(12), BlockY(8), true, aliens)
+    val alienTypes = List(Alien.type1, Alien.type2, Alien.type3)
+    val columnWidth = alienTypes.map(_.width).max
+    val rowHeight = alienTypes.map(_.height).max
+
+    AlienGrid(BlockX(0), BlockY(0), BlockX(2), BlockY(4), columnWidth, rowHeight, drawSprite1 = true, aliens)
   }
 
-  def draw(alienGrid: AlienGrid, ctx: CanvasRenderingContext2D): Unit = {
+  def draw(grid: AlienGrid, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    alienGrid.columns.zipWithIndex.foreach { case (column, colIndex) =>
+    grid.columns.zipWithIndex.foreach { case (column, colIndex) =>
       column.zipWithIndex.foreach { case (option, rowIndex) =>
         option.foreach { alien =>
-          val alienX: BlockX = alienGrid.x + BlockX(colIndex * (alienGrid.columnWidth.v + alienGrid.columnPadding.v))
-          val alienY: BlockY = alienGrid.y + BlockY(rowIndex * (alienGrid.rowHeight.v + alienGrid.rowPadding.v))
-          Alien.draw(alienX, alienY, alien, alienGrid.drawSprite1, ctx)
+          val pos = grid.topLeftOf(Row(rowIndex), Col(colIndex))
+          Alien.draw(pos.x, pos.y, grid.spriteFor(alien), ctx)
         }
       }
     }

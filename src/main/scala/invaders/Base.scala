@@ -22,6 +22,11 @@ case class BlockX(v: Int) {
   def >(x: BlockX): Boolean = ! <=(x)
 }
 
+object BlockX {
+  implicit def ord: Ordering[BlockX] =
+    (a: BlockX, b: BlockX) => implicitly[Ordering[Int]].compare(a.v, b.v)
+}
+
 case class BlockY(v: Int) {
   def pixelY: Int = v * BlockParty.pixelFactor
 
@@ -40,6 +45,11 @@ case class BlockY(v: Int) {
   def <=(y: BlockY): Boolean = v <= y.v
 
   def >(y: BlockY): Boolean = ! <=(y)
+}
+
+object BlockY {
+  implicit def ord: Ordering[BlockY] =
+    (a: BlockY, b: BlockY) => implicitly[Ordering[Int]].compare(a.v, b.v)
 }
 
 case class Base(blockX: BlockX, sprite: Sprite) {

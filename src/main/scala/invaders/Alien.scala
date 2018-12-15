@@ -3,22 +3,22 @@ package invaders
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 case class Alien(sprite1: Sprite, sprite2: Sprite, score: Int) {
-  val width: BlockX = BlockX(sprite1.blockWidth.v.max(sprite2.blockWidth.v))
+  val width : BlockX = BlockX(sprite1.blockWidth.v.max(sprite2.blockWidth.v))
   val height: BlockY = BlockY(sprite1.blockHeight.v.max(sprite2.blockHeight.v))
 
   def box(topLeft: Point): Box =
-    Box(topLeft, Point(topLeft.x + width, topLeft.y + height))
+    Box(topLeft, Point(topLeft.x + width - 1, topLeft.y + height - 1))
 }
 
 case class PositionedAlien(pos: Point, alien: Alien) {
-  val box = alien.box(pos)
+  val box: Box = alien.box(pos)
 }
 
 object Alien {
-  def draw(x: BlockX, y: BlockY, alien: Alien, drawSprite1: Boolean, ctx: CanvasRenderingContext2D): Unit = {
+  def draw(x: BlockX, y: BlockY, sprite: Sprite, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    Sprite.draw(x, y, if (drawSprite1) alien.sprite1 else alien.sprite2, ctx)
+    Sprite.draw(x, y, sprite, ctx)
 
     ctx.restore()
   }

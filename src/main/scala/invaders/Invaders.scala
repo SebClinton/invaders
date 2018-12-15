@@ -23,13 +23,13 @@ object Invaders {
     gridTickDelay = 850.0,
     bullet = None,
     bombs = List(),
-    forts = List(Fort.make(BlockX(25)),Fort.make(BlockX(72)),Fort.make(BlockX(120 )),Fort.make(BlockX(169)))
+    forts = List(Fort.make(BlockX(25)), Fort.make(BlockX(72)), Fort.make(BlockX(120)), Fort.make(BlockX(169)))
   )
 
   private val bulletLoop: () => Any =
     () => gameState = updateBullet(gameState)
 
- private val bombLoop: () => Any =
+  private val bombLoop: () => Any =
     () => gameState = updateBombs(gameState)
 
   private val baseLoop: () => Any =

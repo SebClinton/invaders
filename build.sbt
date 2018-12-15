@@ -5,12 +5,12 @@ lazy val root = project
     inThisBuild(List(
       organization := "seb",
       version      := "0.1-SNAPSHOT",
-      scalaVersion := "2.12.6"
+      scalaVersion := "2.12.8"
     )),
     name := "invaders",
     libraryDependencies ++= Seq(
-      "org.scala-js"  %%% "scalajs-dom"    % "0.9.5",
-      "org.scalatest" %%% "scalatest"      % "3.0.5"    % "test"
+      "org.scala-js"  %%% "scalajs-dom"   % "0.9.6",
+      "org.scalatest" %%% "scalatest"     % "3.0.5"   % "test"
     ),
     scalaJSUseMainModuleInitializer := true
   )

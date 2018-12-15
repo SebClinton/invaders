@@ -3,26 +3,25 @@ package invaders
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 case class Sprite(blocks: List[Block]) {
-  val blockHeight: BlockY = BlockY(blocks.map(_.y.v).max)
-  val blockWidth: BlockX = BlockX(blocks.map(_.x.v).max)
-
+  val blockHeight: BlockY = BlockY(blocks.map(_.y.v + 1).max)
+  val blockWidth : BlockX = BlockX(blocks.map(_.x.v + 1).max)
 
   def blockAt(x: BlockX, y: BlockY): Option[Block] =
     blocks.find(b => b.x == x && b.y == y)
 
-  def isSet(x: BlockX, y: BlockY): Boolean =
-    blockAt(x, y).flatMap(_.color).isDefined
-
-  def setBlocks: List[Block] =
+  def activeBlocks: List[Block] =
     blocks.filter(_.color.isDefined)
 }
 
 case class PositionedSprite(pos: Point, sprite: Sprite) {
   def collidesWith(point: Point): Boolean =
-    sprite.setBlocks.exists(b => b.x + pos.x  == point.x && b.y + pos.y == point.y)
+    sprite.activeBlocks.exists(b => b.x + pos.x == point.x && b.y + pos.y == point.y)
 
-  def collidesWith(other: PositionedSprite) : Boolean = {
-    other.sprite.setBlocks.exists(b => collidesWith(Point(b.x + other.pos.x, b.y + other.pos.y)))
+  def collidesWith(other: PositionedSprite): Boolean = {
+    other.sprite.activeBlocks.exists { b =>
+      val blockPoint = Point(b.x + other.pos.x, b.y + other.pos.y)
+      collidesWith(blockPoint)
+    }
   }
 }
 

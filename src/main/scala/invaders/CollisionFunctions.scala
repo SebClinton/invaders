@@ -3,27 +3,29 @@ package invaders
 object CollisionFunctions {
 
   def checkBulletAndAliens(gameState: GameState): GameState = {
+    val grid = gameState.alienGrid
+
     gameState.bullet.map { b =>
-      val bulletPS = PositionedSprite(Point(b.x, b.y), b.sprite)
-
-      if (gameState.alienGrid.box.overlapsWith(b.box)) {
-        val maybeAlien: Option[(PositionedAlien, Row, Col)] = gameState.alienGrid.positionedAliens.find { case (a, _, _) =>
-          a.box.overlapsWith(b.box)
-        }.flatMap { case (a, row, col) =>
-          println(s"hit alien at row $row, col $col")
-          val alienSprite = if (gameState.alienGrid.drawSprite1) a.alien.sprite1 else a.alien.sprite2
-          val alienPS = PositionedSprite(a.pos, alienSprite)
-
-          if (alienPS.collidesWith(bulletPS)) Some((a, row, col)) else None
-        }
-
-        maybeAlien.map { case (a, row, col) =>
+      if (grid.box.overlapsWith(b.box)) {
+        findHitAlien(grid, b).map { case (a, row, col) =>
           Sounds.explosion.play()
-          gameState.copy(bullet = None)
+          gameState.copy(bullet = None, alienGrid = gameState.alienGrid.removeAlienAt(row, col))
         }.getOrElse(gameState)
       }
       else gameState
     }.getOrElse(gameState)
   }
 
+  def findHitAlien(grid: AlienGrid, bullet: Bullet): Option[(PositionedAlien, Row, Col)] = {
+    val bulletPS = PositionedSprite(Point(bullet.x, bullet.y), bullet.sprite)
+    findOverlappingAlien(grid, bullet).flatMap { case (a, row, col) =>
+      println(s"overlaps with alien at $row,$col")
+      val alienPS = PositionedSprite(a.pos, grid.spriteFor(a.alien))
+      if (alienPS.collidesWith(bulletPS)) Some((a, row, col)) else None
+    }
+  }
+
+  def findOverlappingAlien(grid: AlienGrid, bullet: Bullet): Option[(PositionedAlien, Row, Col)] = {
+    grid.positionedAliens.find(_._1.box.overlapsWith(bullet.box))
+  }
 }
