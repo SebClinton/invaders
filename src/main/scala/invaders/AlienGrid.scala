@@ -2,6 +2,10 @@ package invaders
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
+case class Row(v: Int)
+
+case class Col(v: Int)
+
 case class AlienGrid(
                       x: BlockX,
                       y: BlockY,
@@ -12,24 +16,40 @@ case class AlienGrid(
                       drawSprite1: Boolean,
                       columns: List[List[Option[Alien]]]
                     ) {
-  val width: BlockX = BlockX(columnWidth.v * columns.length + columnPadding.v * (columns.length - 1))
 
-  val columnCount = columns.length
-  val rowCount = columns.foldLeft(0) { (h, col) =>
-    h.max(col.length)
+  val topLeft: Point = Point(x, y)
+
+  lazy val box: Box =
+    Box(Point(x, y), Point(x + width - 1, y + height - 1))
+
+  lazy val width: BlockX = BlockX(columnWidth.v * columnCount + columnPadding.v * (columnCount - 1))
+  lazy val height: BlockY = BlockY(rowHeight.v * rowCount + rowPadding.v * (rowCount - 1))
+
+  lazy val columnCount = columns.length
+  lazy val rowCount = columns.map(_.length).max
+
+  def topLeftOf(row: Row, col: Col): Point =
+    Point(x + col.v * (columnWidth + columnPadding).v, y + row.v * (rowHeight + rowPadding).v)
+
+  lazy val positionedAliens: List[(PositionedAlien, Row, Col)] = {
+    columns.zipWithIndex.flatMap { case (cols, colNum) =>
+      cols.zipWithIndex.flatMap { case (maybeA, rowNum) =>
+        maybeA.map(a => (PositionedAlien(topLeftOf(Row(rowNum), Col(colNum)) + topLeft, a), Row(rowNum), Col(colNum)))
+      }
+    }
   }
 
-  def alienAt(colX: Int, rowY: Int): Option[Alien] = {
+  def alienAt(row: Row, col: Col): Option[Alien] = {
     for {
-      col <- columns.drop(colX - 1).headOption
-      row <- col.drop(rowY - 1).headOption.flatten
-    } yield row
+      column <- columns.drop(col.v).headOption
+      a <- column.drop(row.v).headOption.flatten
+    } yield a
   }
 
-  def bombOriginFor(col: Int, row: Int): Option[(BlockX, BlockY)] = {
-    alienAt(col, row).map { alien =>
-      val alienX: BlockX = x + BlockX(col * (columnWidth.v + columnPadding.v))
-      val alienY: BlockY = y + BlockY(row * (rowHeight.v + rowPadding.v))
+  def bombOriginFor(row: Row, col: Col): Option[(BlockX, BlockY)] = {
+    alienAt(row, col).map { alien =>
+      val alienX: BlockX = x + BlockX(col.v * (columnWidth.v + columnPadding.v))
+      val alienY: BlockY = y + BlockY(row.v * (rowHeight.v + rowPadding.v))
 
       (alienX + alien.width.v / 2, alienY + alien.height)
     }

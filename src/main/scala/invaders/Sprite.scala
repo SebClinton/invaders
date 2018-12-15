@@ -2,10 +2,28 @@ package invaders
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-case class Sprite(blocks: List[List[Block]]) {
-  val blockHeight: BlockY = BlockY(blocks.length)
-  val blockWidth: BlockX =
-    BlockX(blocks.foldLeft(0)((x, row) => row.length.max(x)))
+case class Sprite(blocks: List[Block]) {
+  val blockHeight: BlockY = BlockY(blocks.map(_.y.v).max)
+  val blockWidth: BlockX = BlockX(blocks.map(_.x.v).max)
+
+
+  def blockAt(x: BlockX, y: BlockY): Option[Block] =
+    blocks.find(b => b.x == x && b.y == y)
+
+  def isSet(x: BlockX, y: BlockY): Boolean =
+    blockAt(x, y).flatMap(_.color).isDefined
+
+  def setBlocks: List[Block] =
+    blocks.filter(_.color.isDefined)
+}
+
+case class PositionedSprite(pos: Point, sprite: Sprite) {
+  def collidesWith(point: Point): Boolean =
+    sprite.setBlocks.exists(b => b.x + pos.x  == point.x && b.y + pos.y == point.y)
+
+  def collidesWith(other: PositionedSprite) : Boolean = {
+    other.sprite.setBlocks.exists(b => collidesWith(Point(b.x + other.pos.x, b.y + other.pos.y)))
+  }
 }
 
 object Sprite {
@@ -17,9 +35,9 @@ object Sprite {
   def fromString(s: String, colorMappings: (Char, String)*): Sprite = {
     val colorMap: Map[Char, String] = Map(colorMappings: _*)
 
-    val blocks = s.split("\n").drop(1).dropRight(1).toList.zipWithIndex.map { case (row, lineNumber) =>
+    val blocks = s.split("\n").drop(1).dropRight(1).toList.zipWithIndex.flatMap { case (row, lineNumber) =>
       row.zipWithIndex.map {
-        case (c, col) => Block(colorMap.get(c), col, lineNumber)
+        case (c, col) => Block(colorMap.get(c), BlockX(col), BlockY(lineNumber))
       }.toList
     }
 
@@ -29,10 +47,8 @@ object Sprite {
   def draw(spriteX: BlockX, spriteY: BlockY, sprite: Sprite, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
 
-    sprite.blocks.zipWithIndex.foreach { case (row, y) =>
-      row.zipWithIndex.foreach { case (block, x) =>
-        Block.draw(BlockX(spriteX.v + x), BlockY(spriteY.v + y), block, ctx)
-      }
+    sprite.blocks.foreach { block =>
+      Block.draw(spriteX, spriteY, block, ctx)
     }
 
     ctx.restore()

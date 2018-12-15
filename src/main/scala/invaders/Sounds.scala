@@ -7,6 +7,8 @@ object Sounds {
   private def sound(src: String): Howl = new Howl(js.Dictionary("src" -> js.Array(src)))
 
   val shoot: Howl = sound("sounds/shoot.wav")
+
+  val explosion: Howl = sound("sounds/explosion.wav")
 }
 
 @js.native

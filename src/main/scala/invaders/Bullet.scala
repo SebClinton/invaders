@@ -1,10 +1,9 @@
 package invaders
 
-import invaders.Base.{blockString, sprite}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 case class Bullet(x: BlockX, y: BlockY, sprite: Sprite) {
-
+  lazy val box: Box = Box(Point(x, y), Point(x + sprite.blockWidth - 1, y + sprite.blockHeight - 1))
 }
 
 

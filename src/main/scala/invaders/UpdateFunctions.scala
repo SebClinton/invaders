@@ -41,16 +41,16 @@ object UpdateFunctions {
   }
 
   private def createBomb(gameState: GameState): Option[Bomb] = {
-    val alienCol = Random.nextInt(gameState.alienGrid.columnCount)
-    val alienRow = Random.nextInt(gameState.alienGrid.rowCount)
+    val col = Col(Random.nextInt(gameState.alienGrid.columnCount))
+    val row = Row(Random.nextInt(gameState.alienGrid.rowCount))
 
-    gameState.alienGrid.bombOriginFor(alienCol, alienRow).map { case (x, y) =>
+    gameState.alienGrid.bombOriginFor(row, col).map { case (x, y) =>
       Bomb.make(x, y)
     }
   }
 
   def updateBullet(gameState: GameState): GameState = {
-    gameState.bullet.map { b =>
+    val gs = gameState.bullet.map { b =>
       val newBullet =
         if (b.y.v <= 0) None
         else {
@@ -60,6 +60,8 @@ object UpdateFunctions {
 
       gameState.copy(bullet = newBullet)
     }.getOrElse(gameState)
+
+    CollisionFunctions.checkBulletAndAliens(gs)
   }
 
   def updateBase(gameState: GameState): GameState = {

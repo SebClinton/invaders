@@ -2,17 +2,17 @@ package invaders
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-case class Block(color: Option[String], x: Int, y: Int)
+case class Block(color: Option[String], x: BlockX, y: BlockY)
 
 object Block {
-  def draw(blockX: BlockX, blockY: BlockY, block: Block, ctx: CanvasRenderingContext2D): Unit = {
+  def draw(spriteX: BlockX, spriteY: BlockY, block: Block, ctx: CanvasRenderingContext2D): Unit = {
     import BlockParty.pixelFactor
 
     block.color.foreach { color =>
       ctx.save()
 
       ctx.fillStyle = color
-      ctx.fillRect(blockX.pixelX, blockY.pixelY, pixelFactor, pixelFactor)
+      ctx.fillRect((block.x + spriteX).pixelX, (block.y + spriteY).pixelY, pixelFactor, pixelFactor)
 
       ctx.restore()
     }

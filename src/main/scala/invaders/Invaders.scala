@@ -13,7 +13,7 @@ object Invaders {
   import UpdateFunctions._
 
   // here is the mutable state for the game
-  private var gameState = GameState(
+  var gameState = GameState(
     Base.make(BlockX(BlockParty.screenWidth.v / 2 - Base.sprite.blockWidth.v / 2)),
     drawGuides = false,
     AlienGrid.create,
@@ -23,7 +23,7 @@ object Invaders {
     gridTickDelay = 850.0,
     bullet = None,
     bombs = List(),
-    forts = List(Fort.make(BlockX(25)),Fort.make(BlockX(72)),Fort.make(BlockX(120)),Fort.make(BlockX(169)))
+    forts = List(Fort.make(BlockX(25)),Fort.make(BlockX(72)),Fort.make(BlockX(120 )),Fort.make(BlockX(169)))
   )
 
   private val bulletLoop: () => Any =

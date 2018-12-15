@@ -7,27 +7,46 @@ case class BlockX(v: Int) {
 
   def -(i: Int): BlockX = BlockX(v - i)
 
+  def -(i: BlockX): BlockX = BlockX(v - i.v)
+
   def +(i: Int): BlockX = BlockX(v + i)
 
   def +(i: BlockX): BlockX = BlockX(v + i.v)
 
   def >=(x: BlockX): Boolean = v >= x.v
+
+  def <(x: BlockX): Boolean = ! >=(x)
+
+  def <=(x: BlockX): Boolean = v <= x.v
+
+  def >(x: BlockX): Boolean = ! <=(x)
 }
 
 case class BlockY(v: Int) {
   def pixelY: Int = v * BlockParty.pixelFactor
 
   def +(i: Int): BlockY = BlockY(v + i)
+
   def -(i: Int): BlockY = BlockY(v - i)
 
+  def -(i: BlockY): BlockY = BlockY(v - i.v)
+
   def +(i: BlockY): BlockY = BlockY(v + i.v)
+
+  def >=(y: BlockY): Boolean = v >= y.v
+
+  def <(y: BlockY): Boolean = ! >=(y)
+
+  def <=(y: BlockY): Boolean = v <= y.v
+
+  def >(y: BlockY): Boolean = ! <=(y)
 }
 
 case class Base(blockX: BlockX, sprite: Sprite) {
   val blockY = BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 40)
   val blockHeight: BlockY = sprite.blockHeight
   val blockWidth: BlockX = sprite.blockWidth
-  val centreX:BlockX = blockX + sprite.blockWidth.v / 2
+  val centreX: BlockX = blockX + sprite.blockWidth.v / 2
 }
 
 object Base {

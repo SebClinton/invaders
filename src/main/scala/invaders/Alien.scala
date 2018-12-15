@@ -2,11 +2,16 @@ package invaders
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-import scala.util.Random
-
 case class Alien(sprite1: Sprite, sprite2: Sprite, score: Int) {
   val width: BlockX = BlockX(sprite1.blockWidth.v.max(sprite2.blockWidth.v))
   val height: BlockY = BlockY(sprite1.blockHeight.v.max(sprite2.blockHeight.v))
+
+  def box(topLeft: Point): Box =
+    Box(topLeft, Point(topLeft.x + width, topLeft.y + height))
+}
+
+case class PositionedAlien(pos: Point, alien: Alien) {
+  val box = alien.box(pos)
 }
 
 object Alien {
