@@ -19,7 +19,6 @@ object CollisionFunctions {
   def findHitAlien(grid: AlienGrid, bullet: Bullet): Option[(PositionedAlien, Row, Col)] = {
     val bulletPS = PositionedSprite(Point(bullet.x, bullet.y), bullet.sprite)
     findOverlappingAlien(grid, bullet).flatMap { case (a, row, col) =>
-      println(s"overlaps with alien at $row,$col")
       val alienPS = PositionedSprite(a.pos, grid.spriteFor(a.alien))
       if (alienPS.collidesWith(bulletPS)) Some((a, row, col)) else None
     }
