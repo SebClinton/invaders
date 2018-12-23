@@ -13,7 +13,7 @@ object UpdateFunctions {
     val oldGrid = gameState.alienGrid
     val drawSprite1 = !oldGrid.drawSprite1
 
-    if (gameState.gridDirectionLeft) {
+    val newState = if (gameState.gridDirectionLeft) {
       if (oldGrid.x.v <= 0) {
         gameState.copy(gridDirectionLeft = false, alienGrid = oldGrid.copy(y = oldGrid.y + stepDownBlockCount, drawSprite1 = drawSprite1))
       } else {
@@ -26,6 +26,7 @@ object UpdateFunctions {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + stepAcrossBlockCount, drawSprite1 = drawSprite1))
       }
     }
+    newState.copy(splats = List())
   }
 
   def updateBombs(gameState: GameState): GameState = {

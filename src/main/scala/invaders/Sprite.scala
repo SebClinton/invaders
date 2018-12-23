@@ -10,7 +10,7 @@ case class Sprite(blocks: List[Block]) {
     blocks.find(b => b.x == x && b.y == y)
 
   def activeBlocks: List[Block] =
-    blocks.filter(_.color.isDefined)
+    blocks  .filter(_.color.isDefined)
 }
 
 case class PositionedSprite(pos: Point, sprite: Sprite) {

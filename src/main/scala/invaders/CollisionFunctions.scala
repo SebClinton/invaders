@@ -9,7 +9,10 @@ object CollisionFunctions {
       if (grid.box.overlapsWith(b.box)) {
         findHitAlien(grid, b).map { case (a, row, col) =>
           Sounds.explosion.play()
-          gameState.copy(bullet = None, alienGrid = gameState.alienGrid.removeAlienAt(row, col))
+          gameState.copy(
+            bullet = None,
+            alienGrid = gameState.alienGrid.removeAlienAt(row, col),
+            splats = gameState.splats :+ Splat.make(a.pos.x, a.pos.y))
         }.getOrElse(gameState)
       }
       else gameState

@@ -23,7 +23,8 @@ object Invaders {
     gridTickDelay = 850.0,
     bullet = None,
     bombs = List(),
-    forts = List(Fort.make(BlockX(25)), Fort.make(BlockX(72)), Fort.make(BlockX(120)), Fort.make(BlockX(169)))
+    forts = List(Fort.make(BlockX(25)), Fort.make(BlockX(72)), Fort.make(BlockX(120)), Fort.make(BlockX(169))),
+    splats = List()
   )
 
   private val bulletLoop: () => Any =
@@ -110,6 +111,7 @@ object Invaders {
     gameState.bullet.foreach(Bullet.draw(_, ctx))
     gameState.bombs.foreach(Bomb.draw(_, ctx))
     gameState.forts.foreach(Fort.draw(_, ctx))
+    gameState.splats.foreach(Splat.draw(_, ctx))
 
   }
 }
