@@ -53,7 +53,7 @@ object BlockY {
 }
 
 case class Base(blockX: BlockX, sprite: Sprite) {
-  val blockY = BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 40)
+  val blockY = BlockY(BlockParty.arenaHeight.v - sprite.blockHeight.v - 40)
   val blockHeight: BlockY = sprite.blockHeight
   val blockWidth: BlockX = sprite.blockWidth
   val centreX: BlockX = blockX + sprite.blockWidth.v / 2
@@ -63,14 +63,7 @@ object Base {
 
   def make(x: BlockX): Base = Base(x, sprite)
 
-  def draw(base: Base, ctx: CanvasRenderingContext2D): Unit = {
-    ctx.save()
 
-
-    Sprite.draw(base.blockX, base.blockY, base.sprite, ctx)
-
-    ctx.restore()
-  }
 
   val blockString: String =
     """

@@ -104,14 +104,9 @@ object Invaders {
   }
 
   def draw(gameState: GameState, ctx: CanvasRenderingContext2D): Unit = {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    if (gameState.drawGuides) Grid.draw(ctx)
-    Base.draw(gameState.base, ctx)
-    AlienGrid.draw(gameState.alienGrid, ctx)
-    gameState.bullet.foreach(Bullet.draw(_, ctx))
-    gameState.bombs.foreach(Bomb.draw(_, ctx))
-    gameState.forts.foreach(Fort.draw(_, ctx))
-    gameState.splats.foreach(Splat.draw(_, ctx))
+    import DrawFunctions._
+
+    drawArena(gameState, ctx)
 
   }
 }

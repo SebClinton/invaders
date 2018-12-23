@@ -4,7 +4,7 @@ import invaders.Base.{blockString, sprite}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 case class Fort(x: BlockX, sprite: Sprite) {
-  val blockY = BlockY(BlockParty.screenHeight.v - sprite.blockHeight.v - 60)
+  val blockY = BlockY(BlockParty.arenaHeight.v - sprite.blockHeight.v - 60)
 }
 
 

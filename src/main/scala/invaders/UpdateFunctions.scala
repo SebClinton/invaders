@@ -20,7 +20,7 @@ object UpdateFunctions {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x - stepAcrossBlockCount, drawSprite1 = drawSprite1))
       }
     } else {
-      if (oldGrid.x + oldGrid.width >= BlockParty.screenWidth) {
+      if (oldGrid.x + oldGrid.width + stepAcrossBlockCount >= BlockParty.arenaWidth) {
         gameState.copy(gridDirectionLeft = true, alienGrid = oldGrid.copy(y = oldGrid.y + stepDownBlockCount, drawSprite1 = drawSprite1))
       } else {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + stepAcrossBlockCount, drawSprite1 = drawSprite1))
@@ -73,7 +73,7 @@ object UpdateFunctions {
       val newBase = oldBase.copy(blockX = BlockX(newX))
       gameState.copy(base = newBase)
     } else if (gameState.moveRight) {
-      val newX = (oldBase.blockX.v + 2).min(BlockParty.screenWidth.v - oldBase.blockWidth.v - 2)
+      val newX = (oldBase.blockX.v + 2).min(BlockParty.arenaWidth.v - oldBase.blockWidth.v - 2)
       val newBase = oldBase.copy(blockX = BlockX(newX))
       gameState.copy(base = newBase)
     } else gameState
