@@ -11,5 +11,6 @@ case class GameState(
   bullet: Option[Bullet],
   bombs: List[Bomb],
   forts: List[Fort],
-  splats: List[Splat]
+  splats: List[Splat],
+  score: Int
 )

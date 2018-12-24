@@ -6,8 +6,16 @@ object DrawFunctions {
 
   import BlockParty._
 
-  def clearRect(x: BlockX, y: BlockY, width: BlockX, height: BlockY, ctx: CanvasRenderingContext2D): Unit =
-    ctx.clearRect(x.pixelX, y.pixelY, width.pixelX, height.pixelY)
+
+  def drawScoreboard(gameState: GameState, ctx: CanvasRenderingContext2D): Unit = {
+    ctx.save()
+    val sprites: List[(Sprite, Int)] = Digits.spritesFor(gameState.score).zipWithIndex
+
+    ctx.clearRect(0,0, screenWidth.pixelX, arenaTopLeft.y.pixelY)
+    sprites.foreach { case (s, i) =>
+      Sprite.draw(BlockX(20 + i * 6), BlockY(15), s, ctx)
+    }
+  }
 
   def drawArena(gameState: GameState, ctx: CanvasRenderingContext2D): Unit = {
 

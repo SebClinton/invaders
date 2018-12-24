@@ -8,9 +8,14 @@ object BlockParty {
   val screenWidth: BlockX = BlockX(canvasWidth / pixelFactor)
   val screenHeight: BlockY = BlockY(canvasHeight / pixelFactor)
 
-  val arenaTopLeft: Point = Point.of(2, 25)
-  val arenaWidth: BlockX = screenWidth - 4
-  val arenaHeight: BlockY = screenHeight - 20
+  val scoreBoardTopLeft: Point = Point.of(0, 0)
+  val scoreBoardWidth: BlockX = screenWidth
+  val scoreBoardHeight: BlockY = BlockY(30)
+
+  private val arenaMargin = BlockX(2)
+  val arenaTopLeft: Point = Point(arenaMargin, scoreBoardHeight)
+  val arenaWidth: BlockX = screenWidth - arenaMargin + arenaMargin
+  val arenaHeight: BlockY = screenHeight - scoreBoardHeight
 
   val invaderGreen = "#40f62e"
 }

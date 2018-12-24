@@ -24,7 +24,8 @@ object Invaders {
     bullet = None,
     bombs = List(),
     forts = List(Fort.make(BlockX(25)), Fort.make(BlockX(72)), Fort.make(BlockX(120)), Fort.make(BlockX(169))),
-    splats = List()
+    splats = List(),
+    score = 0
   )
 
   private val bulletLoop: () => Any =
@@ -107,6 +108,6 @@ object Invaders {
     import DrawFunctions._
 
     drawArena(gameState, ctx)
-
+    drawScoreboard(gameState, ctx)
   }
 }

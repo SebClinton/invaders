@@ -12,7 +12,10 @@ object CollisionFunctions {
           gameState.copy(
             bullet = None,
             alienGrid = gameState.alienGrid.removeAlienAt(row, col),
-            splats = gameState.splats :+ Splat.make(a.pos.x, a.pos.y))
+            splats = gameState.splats :+ Splat.make(a.pos.x, a.pos.y),
+            score = gameState.score + a.alien.score
+          )
+
         }.getOrElse(gameState)
       }
       else gameState
