@@ -52,14 +52,18 @@ object BlockY {
     (a: BlockY, b: BlockY) => implicitly[Ordering[Int]].compare(a.v, b.v)
 }
 
-case class Base(blockX: BlockX, sprite: Sprite) {
-  val blockY = BlockY(BlockParty.arenaHeight.v - sprite.blockHeight.v - 40)
+case class Base(x: BlockX, sprite: Sprite) {
+  val y = BlockY(BlockParty.arenaHeight.v - sprite.blockHeight.v - 40)
   val blockHeight: BlockY = sprite.blockHeight
   val blockWidth: BlockX = sprite.blockWidth
-  val centreX: BlockX = blockX + sprite.blockWidth.v / 2
+  val centreX: BlockX = x + sprite.blockWidth.v / 2
+
+  val pos = Point(x, y)
 }
 
 object Base {
+
+
 
   def make(x: BlockX): Base = Base(x, sprite)
 

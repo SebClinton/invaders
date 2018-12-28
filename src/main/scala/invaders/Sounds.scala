@@ -9,6 +9,7 @@ object Sounds {
   val shoot: Howl = sound("sounds/shoot.wav")
 
   val explosion: Howl = sound("sounds/explosion.wav")
+  val invaderKilled: Howl = sound("sounds/invaderkilled.wav")
 }
 
 @js.native

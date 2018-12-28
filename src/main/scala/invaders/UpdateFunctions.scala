@@ -38,7 +38,8 @@ object UpdateFunctions {
     val createdBomb: Option[Bomb] = if (Random.nextFloat() <= 0.005) createBomb(gameState)
     else None
 
-    gameState.copy(bombs = newBombs ++ createdBomb)
+    val newState = gameState.copy(bombs = newBombs ++ createdBomb)
+    CollisionFunctions.checkBombsAndBase(newState)
   }
 
   private def createBomb(gameState: GameState): Option[Bomb] = {
@@ -69,12 +70,12 @@ object UpdateFunctions {
     val oldBase = gameState.base
 
     if (gameState.moveLeft) {
-      val newX = 2.max(oldBase.blockX.v - 2)
-      val newBase = oldBase.copy(blockX = BlockX(newX))
+      val newX = 2.max(oldBase.x.v - 2)
+      val newBase = oldBase.copy(x = BlockX(newX))
       gameState.copy(base = newBase)
     } else if (gameState.moveRight) {
-      val newX = (oldBase.blockX.v + 2).min(BlockParty.arenaWidth.v - oldBase.blockWidth.v - 2)
-      val newBase = oldBase.copy(blockX = BlockX(newX))
+      val newX = (oldBase.x.v + 2).min(BlockParty.arenaWidth.v - oldBase.blockWidth.v - 2)
+      val newBase = oldBase.copy(x = BlockX(newX))
       gameState.copy(base = newBase)
     } else gameState
   }

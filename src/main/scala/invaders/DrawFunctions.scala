@@ -11,7 +11,12 @@ object DrawFunctions {
     ctx.save()
     val sprites: List[(Sprite, Int)] = Digits.spritesFor(gameState.score).zipWithIndex
 
-    ctx.clearRect(0,0, screenWidth.pixelX, arenaTopLeft.y.pixelY)
+    ctx.clearRect(0, 0, screenWidth.pixelX, arenaTopLeft.y.pixelY)
+
+    (0 until gameState.lives).foreach { i =>
+      Sprite.draw(BlockX(120 + i * (Base.sprite.blockWidth.v + 3)), BlockY(15), Base.sprite, ctx)
+    }
+
     sprites.foreach { case (s, i) =>
       Sprite.draw(BlockX(20 + i * 6), BlockY(15), s, ctx)
     }
@@ -40,7 +45,7 @@ object DrawFunctions {
 
   def drawBase(base: Base, ctx: CanvasRenderingContext2D): Unit = {
     ctx.save()
-    Sprite.draw(base.blockX, base.blockY, base.sprite, ctx)
+    Sprite.draw(base.x, base.y, base.sprite, ctx)
     ctx.restore()
   }
 

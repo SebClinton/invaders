@@ -1,10 +1,9 @@
 package invaders
 
-import invaders.Base.{blockString, sprite}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 case class Bomb(x: BlockX, y: BlockY, sprite: Sprite) {
-
+  val pos = Point(x, y)
 }
 
 

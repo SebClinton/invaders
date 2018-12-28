@@ -8,7 +8,7 @@ object CollisionFunctions {
     gameState.bullet.map { b =>
       if (grid.box.overlapsWith(b.box)) {
         findHitAlien(grid, b).map { case (a, row, col) =>
-          Sounds.explosion.play()
+          Sounds.invaderKilled.play()
           gameState.copy(
             bullet = None,
             alienGrid = gameState.alienGrid.removeAlienAt(row, col),
@@ -32,5 +32,25 @@ object CollisionFunctions {
 
   def findOverlappingAlien(grid: AlienGrid, bullet: Bullet): Option[(PositionedAlien, Row, Col)] = {
     grid.positionedAliens.find(_._1.box.overlapsWith(bullet.box))
+  }
+
+  def checkBombsAndBase(gameState: GameState): GameState = {
+    if (gameState.bombs.exists(b => doesBombCollideWithBase(b, gameState.base))) {
+      Sounds.explosion.play()
+      gameState.copy(
+        bombs = Nil,
+        lives = gameState.lives - 1,
+        base = Base.make(BlockX(25)),
+        playerDeath = true
+      )
+    } else {
+      gameState
+    }
+  }
+
+  def doesBombCollideWithBase(bomb: Bomb, base: Base): Boolean = {
+    val bombPS = PositionedSprite(bomb.pos, bomb.sprite)
+    val basePS = PositionedSprite(base.pos, base.sprite)
+    bombPS.collidesWith(basePS)
   }
 }

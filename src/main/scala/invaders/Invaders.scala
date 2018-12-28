@@ -25,7 +25,11 @@ object Invaders {
     bombs = List(),
     forts = List(Fort.make(BlockX(25)), Fort.make(BlockX(72)), Fort.make(BlockX(120)), Fort.make(BlockX(169))),
     splats = List(),
-    score = 0
+    score = 0,
+    lives = 3,
+    timerHandles = Nil,
+    gridLoopHandle = None,
+    playerDeath = false
   )
 
   private val bulletLoop: () => Any =
@@ -39,7 +43,7 @@ object Invaders {
 
   private lazy val gridLoop: () => Any = { () =>
     gameState = updateGrid(gameState)
-    window.setTimeout(gridLoop, gameState.gridTickDelay)
+    gameState = gameState.copy(gridLoopHandle = Some(window.setTimeout(gridLoop, gameState.gridTickDelay)))
   }
 
   private def keyDown(e: KeyboardEvent): Unit =
@@ -71,18 +75,44 @@ object Invaders {
     val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
     def frame(elapsed: Double): Unit = {
-      draw(gameState, ctx)
-      window.requestAnimationFrame(frame)
+      if (gameState.playerDeath) {
+        stopGameLoops()
+        gameState = gameState.copy(playerDeath = false)
+        window.setTimeout(() => {
+          startGameLoops()
+          window.requestAnimationFrame(frame)
+        }, 1000)
+      } else {
+        draw(gameState, ctx)
+        window.requestAnimationFrame(frame)
+      }
     }
 
     canvas.focus()
     window.requestAnimationFrame(frame)
-    window.setInterval(baseLoop, baseTickDelay)
-    window.setInterval(bulletLoop, bulletTickDelay)
-    window.setInterval(bombLoop, bombTickDelay)
-    window.setTimeout(gridLoop, gameState.gridTickDelay)
+
+    startGameLoops()
+
     window.onkeydown = keyDown
     window.onkeyup = keyUp
+  }
+
+  private def startGameLoops(): Unit = {
+    val handles = List(
+      window.setInterval(baseLoop, baseTickDelay),
+      window.setInterval(bulletLoop, bulletTickDelay),
+      window.setInterval(bombLoop, bombTickDelay)
+    )
+
+    val gridLoopHandle = window.setTimeout(gridLoop, gameState.gridTickDelay)
+
+    gameState = gameState.copy(timerHandles = handles, gridLoopHandle = Some(gridLoopHandle))
+  }
+
+  private def stopGameLoops(): Unit = {
+    gameState.timerHandles.foreach(window.clearInterval)
+    gameState.gridLoopHandle.foreach(window.clearTimeout)
+    gameState.copy(timerHandles = Nil, gridLoopHandle = None)
   }
 
   def keyHandler(gs: GameState, e: KeyboardEvent, value: Boolean): GameState = {
@@ -98,7 +128,7 @@ object Invaders {
       case " " | "ArrowDown" if gs.bullet.isEmpty =>
         e.preventDefault()
         Sounds.shoot.play()
-        gs.copy(bullet = Some(Bullet.make(gs.base.centreX, gs.base.blockY - 2)))
+        gs.copy(bullet = Some(Bullet.make(gs.base.centreX, gs.base.y - 2)))
 
       case _ => gs
     }
@@ -107,7 +137,14 @@ object Invaders {
   def draw(gameState: GameState, ctx: CanvasRenderingContext2D): Unit = {
     import DrawFunctions._
 
-    drawArena(gameState, ctx)
-    drawScoreboard(gameState, ctx)
+    if (gameState.lives > 0) {
+      drawArena(gameState, ctx)
+      drawScoreboard(gameState, ctx)
+    } else {
+      stopGameLoops()
+      drawScoreboard(gameState, ctx)
+    }
   }
+
+
 }
