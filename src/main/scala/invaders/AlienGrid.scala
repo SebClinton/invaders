@@ -82,18 +82,4 @@ object AlienGrid {
     AlienGrid(BlockX(0), BlockY(0), BlockX(2), BlockY(4), columnWidth, rowHeight, drawSprite1 = true, aliens)
   }
 
-  def draw(grid: AlienGrid, ctx: CanvasRenderingContext2D): Unit = {
-    ctx.save()
-
-    grid.columns.zipWithIndex.foreach { case (column, colIndex) =>
-      column.zipWithIndex.foreach { case (option, rowIndex) =>
-        option.foreach { alien =>
-          val pos = grid.topLeftOf(Row(rowIndex), Col(colIndex))
-          Alien.draw(pos.x, pos.y, grid.spriteFor(alien), ctx)
-        }
-      }
-    }
-
-    ctx.restore()
-  }
 }
