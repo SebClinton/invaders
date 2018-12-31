@@ -1,32 +1,30 @@
 package invaders
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
-
 case class Row(v: Int)
 
 case class Col(v: Int)
 
 case class AlienGrid(
-  x: BlockX,
-  y: BlockY,
-  columnPadding: BlockX,
-  rowPadding: BlockY,
-  columnWidth: BlockX,
-  rowHeight: BlockY,
-  drawSprite1: Boolean,
-  columns: List[List[Option[Alien]]]
-) {
+                      x: BlockX,
+                      y: BlockY,
+                      columnPadding: BlockX,
+                      rowPadding: BlockY,
+                      columnWidth: BlockX,
+                      rowHeight: BlockY,
+                      drawSprite1: Boolean,
+                      columns: List[List[Option[Alien]]]
+                    ) {
 
   val topLeft: Point = Point(x, y)
 
   lazy val box: Box =
     Box(Point(x, y), Point(x + width - 1, y + height - 1))
 
-  lazy val width : BlockX = BlockX(columnWidth.v * columnCount + columnPadding.v * (columnCount - 1))
+  lazy val width: BlockX = BlockX(columnWidth.v * columnCount + columnPadding.v * (columnCount - 1))
   lazy val height: BlockY = BlockY(rowHeight.v * rowCount + rowPadding.v * (rowCount - 1))
 
   lazy val columnCount: Int = columns.length
-  lazy val rowCount   : Int = columns.map(_.length).max
+  lazy val rowCount: Int = columns.map(_.length).max
 
   def topLeftOf(row: Row, col: Col): Point = {
     topLeft + Point(BlockX(col.v * (columnWidth + columnPadding).v), BlockY(row.v * (rowHeight + rowPadding).v))
@@ -40,14 +38,15 @@ case class AlienGrid(
     }
   }
 
+  import AlienGrid.{dropEmptyColsFromLeft, dropEmptyColsFromRight}
+
   def removeAlienAt(row: Row, col: Col): AlienGrid = {
-    val newAliens = columns.zipWithIndex.map { case (column, c) =>
+    val newAliens: List[List[Option[Alien]]] = columns.zipWithIndex.map { case (column, c) =>
       column.zipWithIndex.map { case (a, r) =>
         if (row.v == r && col.v == c) None else a
       }
     }
-
-    copy(columns = newAliens)
+    dropEmptyColsFromRight(dropEmptyColsFromLeft(copy(columns = newAliens)))
   }
 
   def spriteFor(alien: Alien): Sprite = if (drawSprite1) alien.sprite1 else alien.sprite2
@@ -82,4 +81,18 @@ object AlienGrid {
     AlienGrid(BlockX(0), BlockY(0), BlockX(2), BlockY(4), columnWidth, rowHeight, drawSprite1 = true, aliens)
   }
 
+  @scala.annotation.tailrec
+  def dropEmptyColsFromLeft(grid: AlienGrid): AlienGrid = {
+    grid.columns match {
+      case head :: tail if head.flatten.isEmpty =>
+        dropEmptyColsFromLeft(grid.copy(columns = tail, x = grid.x + grid.columnWidth + grid.columnPadding))
+
+      case _ => grid
+    }
+  }
+
+  def dropEmptyColsFromRight(grid: AlienGrid): AlienGrid = {
+    val newGrid = dropEmptyColsFromLeft(grid.copy(columns = grid.columns.reverse))
+    newGrid.copy(columns = newGrid.columns.reverse, x = grid.x)
+  }
 }
