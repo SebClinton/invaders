@@ -6,7 +6,6 @@ import org.scalajs.dom.{document, window}
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 object Invaders {
-
   @JSExportTopLevel("invaders.Invaders")
   protected def getInstance(): this.type = this
 
