@@ -16,5 +16,6 @@ case class GameState(
                       lives: Int,
                       timerHandles: List[Int],
                       gridLoopHandle: Option[Int],
-                      playerDeath: Boolean
+                      playerDeath: Boolean,
+                      stepCount: Int
                     )

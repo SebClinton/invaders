@@ -10,6 +10,13 @@ object Sounds {
 
   val explosion: Howl = sound("sounds/explosion.wav")
   val invaderKilled: Howl = sound("sounds/invaderkilled.wav")
+
+  val chant1: Howl = sound("sounds/fastinvader1.wav")
+  val chant2: Howl = sound("sounds/fastinvader2.wav")
+  val chant3: Howl = sound("sounds/fastinvader3.wav")
+  val chant4: Howl = sound("sounds/fastinvader4.wav")
+
+  val chants = List(chant1, chant2, chant3, chant4)
 }
 
 @js.native

@@ -26,7 +26,8 @@ object UpdateFunctions {
         gameState.copy(alienGrid = oldGrid.copy(x = oldGrid.x + stepAcrossBlockCount, drawSprite1 = drawSprite1))
       }
     }
-    newState.copy(splats = List())
+    Sounds.chants(gameState.stepCount).play()
+    newState.copy(splats = List(), stepCount = (gameState.stepCount + 1) % Sounds.chants.length)
   }
 
   def updateBombs(gameState: GameState): GameState = {

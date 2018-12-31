@@ -28,7 +28,8 @@ object Invaders {
     lives = 3,
     timerHandles = Nil,
     gridLoopHandle = None,
-    playerDeath = false
+    playerDeath = false,
+    stepCount = 0
   )
 
   private val bulletLoop: () => Any =
